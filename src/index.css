@@ -8,6 +8,17 @@
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;
+    /* Per-skin faces. Each variant reaches for a distinctive family so the
+       three don't blur together: an engraved serif for the atlas, a heavy
+       grotesque for the arcade, a characterful mono for the terminal. */
+    --font-serif: 'Young Serif', ui-serif, Georgia, serif;
+    --font-body: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+    --font-numeric: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Spline Sans Mono', ui-monospace, SFMono-Regular, monospace;
+    --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-back: cubic-bezier(0.34, 1.4, 0.5, 1);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -130,4 +141,38 @@
   html {
     @apply font-sans;
     }
+}
+
+@layer utilities {
+  /* Subtle spring-y pop on the correct card when the answer is revealed. */
+  .animate-correct-pop {
+    animation: correct-pop 100ms var(--ease-out-back);
+  }
+
+  /* Short horizontal shake on the wrongly-picked card — reads as "no". */
+  .animate-wrong-shake {
+    animation: wrong-shake 110ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+}
+
+@keyframes correct-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+
+@keyframes wrong-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* Reduced motion: keep the color/outline feedback, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-correct-pop,
+  .animate-wrong-shake {
+    animation: none;
+  }
 }

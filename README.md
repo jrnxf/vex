@@ -1,21 +1,24 @@
-# React + TypeScript + Vite + shadcn/ui
+# vex
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+**`guess the flag.`** — a fast, terminal-styled flag quiz.
 
-## Adding components
+Type the nation, build a streak, beat your best.
 
-To add components to your app, run the following command:
+![vex](./public/og.png)
+
+## dev
 
 ```bash
-npx shadcn@latest add button
+bun install
+bun dev
 ```
 
-This will place the ui components in the `src/components` directory.
+## build
 
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button"
+```bash
+bun run build
 ```
+
+## stack
+
+`react 19` · `vite` · `tailwind v4` · `typescript` · flags via [flagcdn](https://flagcdn.com)
