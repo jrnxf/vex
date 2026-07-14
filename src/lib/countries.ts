@@ -3,8 +3,10 @@ export type Country = {
   name: string
 }
 
-// ISO 3166-1 alpha-2 codes (lowercase) map to flag images on flagcdn.com.
-// Every sovereign state (UN members plus a few widely recognized others).
+// ISO 3166-1 alpha-2 codes (lowercase) map to flag SVGs bundled under
+// public/flags/ (originally from flagcdn.com, self-hosted so the app works
+// fully offline). Every sovereign state (UN members plus a few widely
+// recognized others).
 // Names are kept ASCII and in their common short form so they stay easy to
 // type in the answer prompt.
 export const countries: Country[] = [
@@ -206,6 +208,9 @@ export const countries: Country[] = [
   { code: "zw", name: "Zimbabwe" },
 ]
 
-export function flagUrl(code: string, width: 320 | 640 | 1280 = 640): string {
-  return `https://flagcdn.com/w${width}/${code}.png`
+// SVGs are resolution-independent, so the container's letterbox handles sizing
+// — no width variants needed. Served locally and precached by the service
+// worker, so flags load with zero network dependency.
+export function flagUrl(code: string): string {
+  return `/flags/${code}.svg`
 }
