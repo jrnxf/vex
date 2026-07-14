@@ -29,15 +29,20 @@ function CornerBracket({ at }: { at: "tl" | "tr" | "bl" | "br" }) {
 }
 
 export function Terminal({ quiz }: { quiz: Quiz }) {
-  const { round, streak, best, accuracy, total, seen, deckSize, complete } =
-    quiz
+  const { round, streak, best, accuracy, seen, deckSize, complete } = quiz
 
   return (
     <div
       className="min-h-dvh bg-[oklch(0.155_0.008_70)] font-mono text-[oklch(0.86_0.02_80)]"
       style={{
-        backgroundImage:
+        // Neutral CRT texture: a faint glow blooming from the center (where the
+        // flag sits) plus fine scanlines. All pure neutral — no hue — so the
+        // amber accents stay the only warmth.
+        backgroundImage: [
+          "radial-gradient(ellipse 85% 65% at 50% 42%, oklch(0.9 0 0 / 0.03), transparent 70%)",
           "repeating-linear-gradient(0deg, oklch(1 0 0 / 0.015) 0 1px, transparent 1px 3px)",
+        ].join(", "),
+        backgroundAttachment: "fixed",
       }}
     >
       <div className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center px-4 py-[max(1.5rem,env(safe-area-inset-top))] sm:px-5">
@@ -53,7 +58,6 @@ export function Terminal({ quiz }: { quiz: Quiz }) {
             <Field label="best" value={pad2(best)} />
             <Field label="acc" value={`${accuracy}%`} />
             <Field label="seen" value={`${pad2(seen)}/${deckSize}`} />
-            <Field label="n" value={pad2(total)} />
           </div>
 
           <div className="p-4 sm:p-5">
