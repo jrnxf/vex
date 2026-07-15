@@ -10,21 +10,24 @@ function pad2(n: number) {
   return String(n).padStart(2, "0")
 }
 
+// L-shaped corner marks. Drawn with borders rather than box-drawing glyphs
+// (┌┐└┘) so the visible ink lands exactly where it's positioned: a glyph sits
+// off-center inside its line-box by the font's ascent/descent, which made the
+// top marks hug the flag while the bottom ones left a gap. Borders have no
+// such metrics, so all four insets are congruent.
 function CornerBracket({ at }: { at: "tl" | "tr" | "bl" | "br" }) {
-  const map = {
-    tl: { pos: "left-1 top-1", ch: "┌" },
-    tr: { pos: "right-1 top-1", ch: "┐" },
-    bl: { pos: "bottom-1 left-1", ch: "└" },
-    br: { pos: "bottom-1 right-1", ch: "┘" },
+  const pos = {
+    tl: "left-1 top-1 border-l border-t",
+    tr: "right-1 top-1 border-r border-t",
+    bl: "bottom-1 left-1 border-l border-b",
+    br: "bottom-1 right-1 border-r border-b",
   }[at]
   return (
     <span
       aria-hidden
-      className={cn("absolute font-mono text-sm leading-none", map.pos)}
-      style={{ color: AMBER }}
-    >
-      {map.ch}
-    </span>
+      className={cn("absolute size-2", pos)}
+      style={{ borderColor: AMBER }}
+    />
   )
 }
 
@@ -37,12 +40,16 @@ export function Terminal({ quiz }: { quiz: Quiz }) {
       style={{
         // Neutral CRT texture: a faint glow blooming from the center (where the
         // flag sits) plus fine scanlines. All pure neutral — no hue — so the
-        // amber accents stay the only warmth.
+        // amber accents stay the only warmth. Kept on the scrolling container
+        // with the default (scroll) background attachment: `fixed` attachment
+        // is broken on iOS Safari — it rasterizes the layer at reduced
+        // resolution (blowing the scanlines up several times over) and leaves
+        // the bottom safe-area unpainted. Scroll attachment renders 1:1 and
+        // paints the full min-h-dvh box, all the way to the bottom edge.
         backgroundImage: [
           "radial-gradient(ellipse 85% 65% at 50% 42%, oklch(0.9 0 0 / 0.03), transparent 70%)",
           "repeating-linear-gradient(0deg, oklch(1 0 0 / 0.015) 0 1px, transparent 1px 3px)",
         ].join(", "),
-        backgroundAttachment: "fixed",
       }}
     >
       <div className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center px-4 py-[max(1.5rem,env(safe-area-inset-top))] sm:px-5">
@@ -74,14 +81,17 @@ export function Terminal({ quiz }: { quiz: Quiz }) {
                   <CornerBracket at="tr" />
                   <CornerBracket at="bl" />
                   <CornerBracket at="br" />
-                  <div className="mx-auto flex aspect-[3/2] w-full max-w-sm items-center justify-center">
-                    <img
-                      key={round.id}
-                      src={flagUrl(round.answer.code)}
-                      alt="Identify the country this flag belongs to"
-                      className="max-h-full max-w-full animate-in object-contain duration-150 ease-out fade-in"
-                    />
-                  </div>
+                  {/* The img itself is the fixed 3:2 plate: its height derives
+                      from its own definite width (not a percentage of an
+                      aspect-ratio parent, which iOS Safari fails to resolve —
+                      that let tall flags like Nepal overflow the brackets), and
+                      object-contain letterboxes each flag inside it. */}
+                  <img
+                    key={round.id}
+                    src={flagUrl(round.answer.code)}
+                    alt="Identify the country this flag belongs to"
+                    className="mx-auto block aspect-[3/2] w-full max-w-sm animate-in object-contain duration-150 ease-out fade-in"
+                  />
                 </div>
 
                 {/* Keyed by round so the typed query and focus reset each round. */}
